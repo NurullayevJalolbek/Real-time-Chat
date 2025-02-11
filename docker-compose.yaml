@@ -1,0 +1,76 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./docker/php.dockerfile
+    container_name: websocket_app
+    restart: unless-stopped
+    volumes:
+      - .:/var/www
+    networks:
+      - app_network
+    depends_on:
+      - mysql
+    ports:
+      - "8080:8080"
+
+  mysql:
+    image: mysql:8.0
+    container_name: websocket_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - app_network
+    expose:
+      - 3306
+
+  nginx:
+    container_name: websocket_nginx
+    image: nginx:alpine  # Nginx image
+    ports:
+      - "8000:80"  # Map port 8080 on the host to port 80 inside the container
+    volumes:
+      - ./:/var/www  # Mount the Laravel application directory
+      - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf  # Use our Nginx config
+    depends_on:
+      - app  # Ensure PHP-FPM is started before Nginx
+    networks:
+      - app_network  # Connect to the custom network
+
+  node:
+    image: node:22
+    container_name: websocket_node
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    tty: true
+    ports:
+      - "5173:5173"  # For Vite development server
+    environment:
+      - NODE_ENV=development
+    command: >
+      sh -c "npm install && npm run dev"
+    networks:
+      - app_network
+
+  redis:
+    image: redis:latest
+    container_name: websocket_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - app_network
+
+volumes:
+  redis-data:
+  mysql_data:  # Here we define mysql_data volume
+
+networks:
+  app_network:
+    driver: bridge
