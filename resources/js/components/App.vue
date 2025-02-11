@@ -13,10 +13,12 @@
         </header>
 
         <div class="chat-box" ref="chatBox">
-            <div v-for="(message, index) in messages" :key="index" :class="['message', message.side]">
+            <div v-for="(message, index) in messages" :key="index"
+                :class="['message', message.sender_id === currentChatId ? 'left' : 'right']">
                 {{ message.text }}
             </div>
         </div>
+
 
 
 
@@ -35,7 +37,7 @@
 </template>
 <script setup>
 import axios from 'axios';
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, nextTick } from 'vue';
 import Echo from 'laravel-echo';
 
 
@@ -91,14 +93,14 @@ function getChats() {
 
     axios.get(url)
         .then(response => {
-            messages.value = response.data.map(msg => ({
-                text: msg.text,
-                side: msg.sender_id === currentChatId.value ? 'left' : ' right'
-            }));
+            console.log(response.data)
+            messages.value = response.data; 
 
-            if (chatBox.value) {
-                chatBox.value.scrollTop = chatBox.value.scrollHeight;
-            }
+            nextTick(() => {
+                if (chatBox.value) {
+                    chatBox.value.scrollTop = chatBox.value.scrollHeight;
+                }
+            });
         })
         .catch(error => {
             console.error(error);
@@ -141,15 +143,14 @@ const scrollToBottom = () => {
 onMounted(() => {
     SidebarChats();
     document.addEventListener("click", closeSidebar);
-    
-    window.Echo.private("chat.0-0")
-    .listen('GotMessage', (e) => {
-        console.log(e);
-        messages.value.push({
-            text: e.message.message,  
-            side: e.message.sender_id === currentChatId.value ? 'left' : 'right'
+
+    window.Echo.private(`chat.0-0`)
+        .listen('GotMessage', (e) => {
+            // console.log(e);
+            getChats();
+            // messages.value.push(e.message); // Faqatgina backenddan kelgan ma'lumotni qo'shamiz
         });
-    })
+
 });
 </script>
 <style scoped>
