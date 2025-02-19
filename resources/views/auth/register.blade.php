@@ -4,7 +4,6 @@
             <h2 class="text-2xl font-bold text-white text-center mb-6">Register</h2>
             <form action="{{ route('register.post') }}" method="POST">
                 @csrf
-            
                 <!-- Name input field -->
                 <input type="text" name="name" class="input-field" placeholder="Ism Familya" value="{{ old('name') }}" required>
                 @error('name')

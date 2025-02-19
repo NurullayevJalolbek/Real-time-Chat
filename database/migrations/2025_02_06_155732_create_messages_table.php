@@ -15,11 +15,14 @@ return new class extends Migration
             $table->id();
             $table->foreignId('sender_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('receiver_id')->constrained('users')->onDelete('cascade');
-            $table->text('text');
-            $table->timestamp('delete_message_at')->nullable(); 
-            $table->timestamps(); 
+            $table->text('text')->nullable(); // Xabar matni (agar media bo'lsa, bo'sh bo'lishi mumkin)
+            $table->string('file_path')->nullable(); // Fayl manzili
+            $table->string('file_type')->nullable(); // Yangi file_type ustuni
+            $table->timestamp('delete_message_at')->nullable();
+            $table->timestamps();
         });
     }
+    
 
     /**
      * Reverse the migrations.

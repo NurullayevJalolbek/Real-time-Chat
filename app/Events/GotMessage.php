@@ -25,10 +25,15 @@ class GotMessage implements ShouldBroadcast
 
     }
 
-    public  function broadcastWith(): array
+    public function broadcastWith(): array
     {
         return [
-            'message' => $this->message,
+            'message' => $this->message->text, // Matnli xabar bo‘lsa
+            'file_path' => $this->message->file_path, // Media fayl bo‘lsa
+            'file_type' => $this->message->file_type, // Fayl turi
+            'receiver_id' => $this->message->receiver_id,
+            'sender_id' => $this->message->sender_id,
+            'created_at' => $this->message->created_at->toDateTimeString(),
         ];
     }
 }

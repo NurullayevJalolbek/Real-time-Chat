@@ -3,7 +3,7 @@
 use App\Http\Controllers\MessageController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SidebarController;
-use Illuminate\Support\Facades\Auth;
+
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/', function () {
         return view('app');
@@ -13,6 +13,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/chat/{id}', [MessageController::class, 'show'])->name('chat');
     
     Route::post('/send-message', [MessageController::class, 'store'])->name('send.message');
+    Route::post('/send-media', [MessageController::class, 'media'])->name('send.media');
+
 });
 
 require __DIR__.'/auth.php';
