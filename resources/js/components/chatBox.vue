@@ -48,7 +48,8 @@ defineProps({
     modalImage: String,
     isModalOpen: Boolean,
     closeImageModal: Function,
-    formattedTime: Function // Parentdan kelayotgan funksiya
+    formattedTime: Function, 
+    openImageModal: Function
 
 });
 </script>

@@ -4,10 +4,14 @@
 
     <main class="chat-main" @click="closeSidebar">
 
-      <Header  :chatTitle = "chatTitle"  ></header>
+      <!-- <Header  :chatTitle = "chatTitle"  ></header> -->
+        <header>
+            <button id="menu-btn" @click.stop="toggleSidebar">☰</button>
+            <h1 id="chat-title">{{ chatTitle }}</h1>
+        </header>
 
 
-        <ChatBoxComponent :messages="messages" :currentChatId="currentChatId" :modalImage="modalImage" :isModalOpen="isModalOpen"  :closeImageModal="closeImageModal" :formattedTime = "formattedTime"></ChatBoxComponent>
+        <ChatBoxComponent :messages="messages"  :openImageModal="openImageModal" :currentChatId="currentChatId" :modalImage="modalImage" :isModalOpen="isModalOpen"  :closeImageModal="closeImageModal" :formattedTime = "formattedTime"></ChatBoxComponent>
 
         <footer v-if="CHATID != null">
             <form @submit.prevent="sendMessage" enctype="multipart/form-data" class="chat-form">
@@ -34,7 +38,6 @@
 import axios from 'axios';
 import { ref, onMounted, nextTick } from 'vue';
 import sidebar from './sidebar.vue';
-import Header from './header.vue';
 import ChatBoxComponent from './chatBox.vue';
 
 
@@ -176,8 +179,8 @@ const scrollToBottom = () => {
 
 onMounted(() => {
     SidebarChats();
-    document.addEventListener("click", closeSidebar);
 
+    document.addEventListener("click", closeSidebar);
     window.Echo.private(`chat.0-0`)
         .listen('GotMessage', (e) => {
             getChats();
